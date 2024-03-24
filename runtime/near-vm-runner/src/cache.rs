@@ -453,7 +453,10 @@ impl AnyCache {
             // wrong.
             return Ok(with(&*v));
         };
-        let mut guard = cache.lock().unwrap();
+        let mut guard = {
+            let _span = tracing::debug_span!(target:"vm", "acquire_cache_lock").entered();
+            cache.lock().unwrap()
+        };
         let value = guard.try_get_or_insert(key, generate)?;
         // Same here.
         Ok(with(&**value))
