@@ -114,7 +114,9 @@ impl ShardTries {
         let prefetch_enabled = !is_view
             && (self.0.trie_config.enable_receipt_prefetching
                 || (!self.0.trie_config.sweat_prefetch_receivers.is_empty()
-                    && !self.0.trie_config.sweat_prefetch_senders.is_empty()));
+                    && !self.0.trie_config.sweat_prefetch_senders.is_empty())
+                || !self.0.trie_config.claim_sweat_prefetch_config.is_empty()
+                || !self.0.trie_config.kaiching_prefetch_config.is_empty());
         let prefetch_api = prefetch_enabled.then(|| {
             self.0
                 .prefetchers
@@ -705,11 +707,7 @@ mod test {
         let trie_config = TrieConfig {
             shard_cache_config: trie_cache_config.clone(),
             view_shard_cache_config: trie_cache_config,
-            enable_receipt_prefetching: false,
-            sweat_prefetch_receivers: Vec::new(),
-            sweat_prefetch_senders: Vec::new(),
-            load_mem_tries_for_shards: Vec::new(),
-            load_mem_tries_for_tracked_shards: false,
+            ..TrieConfig::default()
         };
         let shard_uids = Vec::from([ShardUId::single_shard()]);
         ShardTries::new(
@@ -825,11 +823,15 @@ mod test {
         let trie_config = TrieConfig {
             shard_cache_config: trie_cache_config.clone(),
             view_shard_cache_config: trie_cache_config,
+<<<<<<< HEAD
             enable_receipt_prefetching: false,
             sweat_prefetch_receivers: Vec::new(),
             sweat_prefetch_senders: Vec::new(),
             load_mem_tries_for_shards: Vec::new(),
             load_mem_tries_for_tracked_shards: false,
+=======
+            ..TrieConfig::default()
+>>>>>>> ef2cdd02c (prefetch v2)
         };
         let shard_uids = Vec::from([ShardUId { shard_id: 0, version: 0 }]);
         let shard_uid = *shard_uids.first().unwrap();
