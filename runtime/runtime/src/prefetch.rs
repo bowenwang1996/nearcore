@@ -103,7 +103,7 @@ impl TriePrefetcher {
         for receipt in receipts.iter() {
             let is_refund = receipt.predecessor_id == "system";
             match &receipt.receipt {
-                ReceiptEnum::Action(action_receipt) | ReceiptEnum::PromiseYield(action_receipt) => {
+                ReceiptEnum::Action(action_receipt) => {
                     let account_id = receipt.receiver_id.clone();
 
                     // general-purpose account prefetching
@@ -153,7 +153,7 @@ impl TriePrefetcher {
                         }
                     }   
                 }
-                ReceiptEnum::Data(_) | ReceiptEnum::PromiseResume(_) => {}
+                ReceiptEnum::Data(_) => {}
             }
         }
         Ok(())
