@@ -1442,19 +1442,26 @@ impl Runtime {
             set(&mut state_update, TrieKey::DelayedReceiptIndices, &delayed_receipts_indices);
         }
 
-        check_balance(
-            &apply_state.config,
-            &state_update,
-            validator_accounts_update,
-            incoming_receipts,
-            transactions,
-            &outgoing_receipts,
-            &stats,
-        )?;
+        {
+            let _span = tracing::debug_span!(target: "runtime", "check_balance").entered();
+            check_balance(
+                &apply_state.config,
+                &state_update,
+                validator_accounts_update,
+                incoming_receipts,
+                transactions,
+                &outgoing_receipts,
+                &stats,
+            )?;
+        }
+        
 
         state_update.commit(StateChangeCause::UpdatedDelayedReceipts);
         self.apply_state_patch(&mut state_update, state_patch);
-        let (trie, trie_changes, state_changes) = state_update.finalize()?;
+        let (trie, trie_changes, state_changes) = {
+            let _span = tracing::debug_span!(target: "runtime", "state_update::finalize").entered();
+            state_update.finalize()?
+        };
 
         // Dedup proposals from the same account.
         // The order is deterministically changed.
