@@ -153,7 +153,7 @@ impl TriePrefetcher {
                         }
                     }   
                 }
-                ReceiptEnum::Data(_) => {}
+                _ => {}
             }
         }
         Ok(())

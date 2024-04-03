@@ -823,15 +823,7 @@ mod test {
         let trie_config = TrieConfig {
             shard_cache_config: trie_cache_config.clone(),
             view_shard_cache_config: trie_cache_config,
-<<<<<<< HEAD
-            enable_receipt_prefetching: false,
-            sweat_prefetch_receivers: Vec::new(),
-            sweat_prefetch_senders: Vec::new(),
-            load_mem_tries_for_shards: Vec::new(),
-            load_mem_tries_for_tracked_shards: false,
-=======
             ..TrieConfig::default()
->>>>>>> ef2cdd02c (prefetch v2)
         };
         let shard_uids = Vec::from([ShardUId { shard_id: 0, version: 0 }]);
         let shard_uid = *shard_uids.first().unwrap();
