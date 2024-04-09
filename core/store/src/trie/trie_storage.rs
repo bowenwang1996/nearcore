@@ -93,6 +93,8 @@ impl TrieCacheInner {
     /// 100 bytes is an approximation based on lru 0.7.5.
     pub(crate) const PER_ENTRY_OVERHEAD: u64 = 100;
 
+    const DELETION_QUEUE_MAX_UPDATE_NUM: u64 = 10_000;
+
     pub(crate) fn new(
         deletions_queue_capacity: usize,
         total_size_limit: u64,
@@ -139,7 +141,8 @@ impl TrieCacheInner {
     }
 
     pub(crate) fn put(&mut self, key: CryptoHash, value: Arc<[u8]>) {
-        while self.total_size > self.total_size_limit || self.cache.len() == self.cache.cap() {
+        let mut deletion_queue_num_updates = 0;
+        while (self.total_size > self.total_size_limit || self.cache.len() == self.cache.cap()) && deletion_queue_num_updates < Self::DELETION_QUEUE_MAX_UPDATE_NUM {
             // First, try to evict value using the key from deletions queue.
             match self.deletions.pop() {
                 Some(key) => match self.cache.pop(&key) {
@@ -154,6 +157,7 @@ impl TrieCacheInner {
                 },
                 None => {}
             }
+            deletion_queue_num_updates += 1;
 
             // Second, pop LRU value.
             self.metrics.shard_cache_pop_lru.inc();
