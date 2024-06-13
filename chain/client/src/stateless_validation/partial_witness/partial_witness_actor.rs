@@ -419,7 +419,8 @@ impl PartialWitnessActor {
         }
 
         if !self.epoch_manager.verify_partial_witness_signature(&partial_witness)? {
-            return Err(Error::InvalidPartialChunkStateWitness("Invalid signature".to_string()));
+            let chunk_validator = self.epoch_manager.get_chunk_producer(partial_witness.epoch_id(), partial_witness.height_created(), partial_witness.shard_id())?;
+            return Err(Error::InvalidPartialChunkStateWitness(format!("Invalid signature from {}", chunk_validator)));
         }
 
         Ok(true)
